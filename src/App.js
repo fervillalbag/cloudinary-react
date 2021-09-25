@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import axios from "axios";
+import { Image } from "cloudinary-react";
+import { useState } from "react";
 
 function App() {
+  const [imageSelected, setImageSelected] = useState("");
+  const [imageUpload, setImageUpload] = useState(null);
+
+  const handleUploadImage = async () => {
+    const formData = new FormData();
+    formData.append("file", imageSelected);
+    formData.append("upload_preset", "bzoafuud");
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/da6b7skw8/image/upload",
+      formData
+    );
+    setImageUpload(res.data.url);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input
+        type="file"
+        onChange={(e) => {
+          setImageSelected(e.target.files[0]);
+        }}
+      />
+      <button onClick={handleUploadImage}>Send</button>
+
+      {imageUpload && (
+        <Image
+          style={{ width: 100 }}
+          cloudName="da6b7skw8"
+          publicId={imageUpload}
+        />
+      )}
     </div>
   );
 }
